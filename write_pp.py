@@ -1,7 +1,7 @@
 import os
 
 
-def write_pp():
+def write_pp(flg_wan90 = False):
     #
     # bands.in : Read by bands.x
     #
@@ -23,18 +23,19 @@ def write_pp():
     #
     # pw2wan.in : PW & wannier90 interface
     #
-    if not os.path.isfile("pw2wan.in"):
-        with open("pw2wan.in", 'w') as f:
-            print("&INPUTPP", file=f)
-            print("         outdir = \'./\'", file=f)
-            print("         prefix = \'pwscf\'", file=f)
-            print("      write_mmn = .true.", file=f)
-            print("      write_amn = .true.", file=f)
-            print("      write_unk = .true.", file=f)
-            print("      write_dmn = .true.", file=f)
-            print(" spin_component = \'none\'", file=f)
-            print("       wan_mode = \'standalone\'", file=f)
-            print("/", file=f)
+    if flg_wan90 is True:
+        if not os.path.isfile("pw2wan.in"):
+            with open("pw2wan.in", 'w') as f:
+                print("&INPUTPP", file=f)
+                print("         outdir = \'./\'", file=f)
+                print("         prefix = \'pwscf\'", file=f)
+                print("      write_mmn = .true.", file=f)
+                print("      write_amn = .true.", file=f)
+                print("      write_unk = .true.", file=f)
+                print("      write_dmn = .true.", file=f)
+                print(" spin_component = \'none\'", file=f)
+                print("       wan_mode = \'standalone\'", file=f)
+                print("/", file=f)
     #
     # pp.in : Plot Kohn-Sham orbitals
     #

@@ -11,6 +11,7 @@ if __name__ == '__main__':
         description='make input files for QE from a cif file.',
         epilog='end',
         add_help=True,
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
 
     parser.add_argument('-i', '--input_cif',

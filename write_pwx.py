@@ -33,7 +33,7 @@ def write_middle(f, pseudo_dir, nat, ntyp, ecutwfc, ecutrho, rel):
         print("     lspinorb = .FALSE.", file=f)
 
 
-def write_pwx(skp, pseudo_dir, ecutwfc, ecutrho, pseudo_dict, nq, nbnd, rel):
+def write_pwx(skp, pseudo_dir, ecutwfc, ecutrho, pseudo_dict, nq, nbnd, rel, flg_phonon=False, flg_sctk=False, flg_respack=True, flg_wan90 = False):
     #
     # Lattice information
     #
@@ -109,48 +109,49 @@ def write_pwx(skp, pseudo_dir, ecutwfc, ecutrho, pseudo_dict, nq, nbnd, rel):
     #
     # nscf_p.in : Phonon pre-process
     #
-    if not os.path.isfile("nscf_p.in"):
-        with open("nscf_p.in", 'w') as f:
-            print("&CONTROL", file=f)
-            print(" calculation = \'nscf\'", file=f)
-            write_middle(f, pseudo_dir, nat, ntyp, ecutwfc, ecutrho, rel)
-            print(" occupations = \'tetrahedra_opt\'", file=f)
-            print("/", file=f)
-            print("&ELECTRONS", file=f)
-            print("/", file=f)
-            write_atom(f, avec, typ, nat, pos, atom, pseudo_dict)
-            print("K_POINTS automatic", file=f)
-            print(" %d %d %d 0 0 0" % (nq[0]*2, nq[1]*2, nq[2]*2), file=f)
-    #
-    # nscf_pd.in : Electron-Phonon pre-process
-    #
-    if not os.path.isfile("nscf_pd.in"):
-        with open("nscf_pd.in", 'w') as f:
-            print("&CONTROL", file=f)
-            print(" calculation = \'nscf\'", file=f)
-            write_middle(f, pseudo_dir, nat, ntyp, ecutwfc, ecutrho, rel)
-            print(" occupations = \'tetrahedra_opt\'", file=f)
-            print("/", file=f)
-            print("&ELECTRONS", file=f)
-            print("/", file=f)
-            write_atom(f, avec, typ, nat, pos, atom, pseudo_dict)
-            print("K_POINTS automatic", file=f)
-            print(" %d %d %d 0 0 0" % (nq[0]*4, nq[1]*4, nq[2]*4), file=f)
-    #
-    # nscf_pc.in : Electron-Phonon matrix pre-process
-    #
-    if not os.path.isfile("nscf_pc.in"):
-        with open("nscf_pc.in", 'w') as f:
-            print("&CONTROL", file=f)
-            print(" calculation = \'nscf\'", file=f)
-            write_middle(f, pseudo_dir, nat, ntyp, ecutwfc, ecutrho, rel)
-            print(" occupations = \'tetrahedra_opt\'", file=f)
-            print("/", file=f)
-            print("&ELECTRONS", file=f)
-            print("/", file=f)
-            write_atom(f, avec, typ, nat, pos, atom, pseudo_dict)
-            print("K_POINTS automatic", file=f)
-            print(" %d %d %d 0 0 0" % (nq[0], nq[1], nq[2]), file=f)
+    if flg_phonon is True: 
+        if not os.path.isfile("nscf_p.in"):
+            with open("nscf_p.in", 'w') as f:
+                print("&CONTROL", file=f)
+                print(" calculation = \'nscf\'", file=f)
+                write_middle(f, pseudo_dir, nat, ntyp, ecutwfc, ecutrho, rel)
+                print(" occupations = \'tetrahedra_opt\'", file=f)
+                print("/", file=f)
+                print("&ELECTRONS", file=f)
+                print("/", file=f)
+                write_atom(f, avec, typ, nat, pos, atom, pseudo_dict)
+                print("K_POINTS automatic", file=f)
+                print(" %d %d %d 0 0 0" % (nq[0]*2, nq[1]*2, nq[2]*2), file=f)
+                #
+                # nscf_pd.in : Electron-Phonon pre-process
+                #
+        if not os.path.isfile("nscf_pd.in"):
+            with open("nscf_pd.in", 'w') as f:
+                print("&CONTROL", file=f)
+                print(" calculation = \'nscf\'", file=f)
+                write_middle(f, pseudo_dir, nat, ntyp, ecutwfc, ecutrho, rel)
+                print(" occupations = \'tetrahedra_opt\'", file=f)
+                print("/", file=f)
+                print("&ELECTRONS", file=f)
+                print("/", file=f)
+                write_atom(f, avec, typ, nat, pos, atom, pseudo_dict)
+                print("K_POINTS automatic", file=f)
+                print(" %d %d %d 0 0 0" % (nq[0]*4, nq[1]*4, nq[2]*4), file=f)
+                #
+                # nscf_pc.in : Electron-Phonon matrix pre-process
+                #
+        if not os.path.isfile("nscf_pc.in"):
+            with open("nscf_pc.in", 'w') as f:
+                print("&CONTROL", file=f)
+                print(" calculation = \'nscf\'", file=f)
+                write_middle(f, pseudo_dir, nat, ntyp, ecutwfc, ecutrho, rel)
+                print(" occupations = \'tetrahedra_opt\'", file=f)
+                print("/", file=f)
+                print("&ELECTRONS", file=f)
+                print("/", file=f)
+                write_atom(f, avec, typ, nat, pos, atom, pseudo_dict)
+                print("K_POINTS automatic", file=f)
+                print(" %d %d %d 0 0 0" % (nq[0], nq[1], nq[2]), file=f)
     #
     # band.in : Plot band
     #
@@ -176,91 +177,94 @@ def write_pwx(skp, pseudo_dir, ecutwfc, ecutrho, pseudo_dict, nq, nbnd, rel):
     #
     # nscf_w.in : Non-scf for wannier90
     #
-    if not os.path.isfile("nscf_w.in"):
-        with open("nscf_w.in", 'w') as f:
-            print("&CONTROL", file=f)
-            print(" calculation = \'bands\'", file=f)
-            print("  wf_collect = .true.", file=f)
-            write_middle(f, pseudo_dir, nat, ntyp, ecutwfc, ecutrho, rel)
-            print("        nbnd = %d" % nbnd, file=f)
-            print("/", file=f)
-            print("&ELECTRONS", file=f)
-            print("/", file=f)
-            write_atom(f, avec, typ, nat, pos, atom, pseudo_dict)
-            print("K_POINTS crystal", file=f)
-            print(nq[0]*nq[1]*nq[2], file=f)
-            for i0 in range(nq[0]):
-                for i1 in range(nq[1]):
-                    for i2 in range(nq[2]):
-                        print(" %f %f %f %f" % (
-                                float(i0)/float(nq[0]),
-                                float(i1)/float(nq[1]),
-                                float(i2)/float(nq[2]),
-                                1.0/float(nq[0]*nq[1]*nq[2])
-                        ), file=f)
+    if flg_wan90 is True:
+        if not os.path.isfile("nscf_w.in"):
+            with open("nscf_w.in", 'w') as f:
+                print("&CONTROL", file=f)
+                print(" calculation = \'bands\'", file=f)
+                print("  wf_collect = .true.", file=f)
+                write_middle(f, pseudo_dir, nat, ntyp, ecutwfc, ecutrho, rel)
+                print("        nbnd = %d" % nbnd, file=f)
+                print("/", file=f)
+                print("&ELECTRONS", file=f)
+                print("/", file=f)
+                write_atom(f, avec, typ, nat, pos, atom, pseudo_dict)
+                print("K_POINTS crystal", file=f)
+                print(nq[0]*nq[1]*nq[2], file=f)
+                for i0 in range(nq[0]):
+                    for i1 in range(nq[1]):
+                        for i2 in range(nq[2]):
+                            print(" %f %f %f %f" % (
+                                    float(i0)/float(nq[0]),
+                                    float(i1)/float(nq[1]),
+                                    float(i2)/float(nq[2]),
+                                    1.0/float(nq[0]*nq[1]*nq[2])
+                            ), file=f)
     #
     # nscf_r.in : Pre-process for respack
     #
-    if not os.path.isfile("nscf_r.in"):
-        with open("nscf_r.in", 'w') as f:
-            print("&CONTROL", file=f)
-            print(" calculation = \'nscf\'", file=f)
-            print("  wf_collect = .true.", file=f)
-            write_middle(f, pseudo_dir, nat, ntyp, ecutwfc, ecutrho, rel)
-            print(" occupations = \'tetrahedra_opt\'", file=f)
-            print("        nbnd = %d" % nbnd, file=f)
-            print("/", file=f)
-            print("&ELECTRONS", file=f)
-            print("/", file=f)
-            write_atom(f, avec, typ, nat, pos, atom, pseudo_dict)
-            print("K_POINTS automatic", file=f)
-            print(" %d %d %d 0 0 0" % (nq[0], nq[1], nq[2]), file=f)
+    if flg_respack is True:
+        if not os.path.isfile("nscf_r.in"):
+            with open("nscf_r.in", 'w') as f:
+                print("&CONTROL", file=f)
+                print(" calculation = \'nscf\'", file=f)
+                print("  wf_collect = .true.", file=f)
+                write_middle(f, pseudo_dir, nat, ntyp, ecutwfc, ecutrho, rel)
+                print(" occupations = \'tetrahedra_opt\'", file=f)
+                print("        nbnd = %d" % nbnd, file=f)
+                print("/", file=f)
+                print("&ELECTRONS", file=f)
+                print("/", file=f)
+                write_atom(f, avec, typ, nat, pos, atom, pseudo_dict)
+                print("K_POINTS automatic", file=f)
+                print(" %d %d %d 0 0 0" % (nq[0], nq[1], nq[2]), file=f)
     #
     # twin.in : For sctk input
     #
-    if not os.path.isfile("twin.in"):
-        with open("twin.in", 'w') as f:
-            print("&CONTROL", file=f)
-            print(" calculation = \'bands\'", file=f)
-            print("  wf_collect = .true.", file=f)
-            write_middle(f, pseudo_dir, nat, ntyp, ecutwfc, ecutrho, rel)
-            print("        nbnd = %d" % nbnd, file=f)
-            print("/", file=f)
-            print("&ELECTRONS", file=f)
-            print("/", file=f)
-            write_atom(f, avec, typ, nat, pos, atom, pseudo_dict)
-            print("K_POINTS crystal", file=f)
-            print(nq[0]*nq[1]*nq[2]*2, file=f)
-            #
-            # Without Shift
-            #
-            kvec = [0.0]*3
-            for i0 in range(nq[0]):
-                kvec[0] = float(i0)/float(nq[0])
-                if i0*2 >= nq[0]:
-                    kvec[0] += -1.0
-                for i1 in range(nq[1]):
-                    kvec[1] = float(i1) / float(nq[1])
-                    if i1 * 2 >= nq[1]:
-                        kvec[1] += -1.0
-                    for i2 in range(nq[2]):
-                        kvec[2] = float(i2) / float(nq[2])
-                        if i2 * 2 >= nq[2]:
-                            kvec[2] += -1.0
-                        print(" %f %f %f 1.0" % (kvec[0], kvec[1], kvec[2]), file=f)
-            #
-            # Shifted
-            #
-            for i0 in range(nq[0]):
-                kvec[0] = (float(i0) + 0.5)/float(nq[0])
-                if i0 * 2 + 1 >= nq[0]:
-                    kvec[0] += -1.0
-                for i1 in range(nq[1]):
-                    kvec[1] = (float(i1) + 0.5) / float(nq[1])
-                    if i1 * 2 + 1 >= nq[1]:
-                        kvec[1] += -1.0
-                    for i2 in range(nq[2]):
-                        kvec[2] = (float(i2) + 0.5) / float(nq[2])
-                        if i2 * 2 + 1 >= nq[2]:
-                            kvec[2] += -1.0
-                        print(" %f %f %f 1.0" % (kvec[0], kvec[1], kvec[2]), file=f)
+    if flg_sctk is True:
+        if not os.path.isfile("twin.in"):
+            with open("twin.in", 'w') as f:
+                print("&CONTROL", file=f)
+                print(" calculation = \'bands\'", file=f)
+                print("  wf_collect = .true.", file=f)
+                write_middle(f, pseudo_dir, nat, ntyp, ecutwfc, ecutrho, rel)
+                print("        nbnd = %d" % nbnd, file=f)
+                print("/", file=f)
+                print("&ELECTRONS", file=f)
+                print("/", file=f)
+                write_atom(f, avec, typ, nat, pos, atom, pseudo_dict)
+                print("K_POINTS crystal", file=f)
+                print(nq[0]*nq[1]*nq[2]*2, file=f)
+                #
+                # Without Shift
+                #
+                kvec = [0.0]*3
+                for i0 in range(nq[0]):
+                    kvec[0] = float(i0)/float(nq[0])
+                    if i0*2 >= nq[0]:
+                        kvec[0] += -1.0
+                    for i1 in range(nq[1]):
+                        kvec[1] = float(i1) / float(nq[1])
+                        if i1 * 2 >= nq[1]:
+                            kvec[1] += -1.0
+                        for i2 in range(nq[2]):
+                            kvec[2] = float(i2) / float(nq[2])
+                            if i2 * 2 >= nq[2]:
+                                kvec[2] += -1.0
+                            print(" %f %f %f 1.0" % (kvec[0], kvec[1], kvec[2]), file=f)
+                #
+                # Shifted
+                #
+                for i0 in range(nq[0]):
+                    kvec[0] = (float(i0) + 0.5)/float(nq[0])
+                    if i0 * 2 + 1 >= nq[0]:
+                        kvec[0] += -1.0
+                    for i1 in range(nq[1]):
+                        kvec[1] = (float(i1) + 0.5) / float(nq[1])
+                        if i1 * 2 + 1 >= nq[1]:
+                            kvec[1] += -1.0
+                        for i2 in range(nq[2]):
+                            kvec[2] = (float(i2) + 0.5) / float(nq[2])
+                            if i2 * 2 + 1 >= nq[2]:
+                                kvec[2] += -1.0
+                            print(" %f %f %f 1.0" % (kvec[0], kvec[1], kvec[2]), file=f)

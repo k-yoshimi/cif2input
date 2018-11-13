@@ -27,7 +27,7 @@ def good_proc(nproc, ncore):
     return nproc
 
 
-def write_sh(nkcbz, nkc, nks, nkd, nk_path, atom, atomwfc_dict, queue, path=""):
+def write_sh(nkcbz, nkc, nks, nkd, nk_path, atom, atomwfc_dict, queue, path="", flg_phonon=False, flg_sctk=False):
     
     pw = path + "pw.x"
     ph = path + "ph.x"
@@ -101,20 +101,21 @@ def write_sh(nkcbz, nkc, nks, nkd, nk_path, atom, atomwfc_dict, queue, path=""):
     #
     # Phonon
     #
-    if not os.path.isfile("ph.sh"):
-        with open("ph.sh", 'w') as f:
-            print("#!/bin/sh", file=f)
-            print("#QSUB -queue", queue[0:len(queue) - 1], file=f)
-            print("#QSUB -node", node, file=f)
-            print("#PBS -l walltime=8:00:00", file=f)
-            print("source ~/.bashrc", file=f)
-            print("source /home/issp/materiapps/qe/q-e-6.2.1-oldxml.sh", file=f)
-            print("cd $PBS_O_WORKDIR", file=f)
-            print("mpijob -n %d %s -nk %d -ntg %d -in nscf_p.in > nscf_p.out"
-                  % (nproc, pw, nk, ntg), file=f)
-            print("mpijob -n %d %s -nk %d -ntg %d -in ph.in > ph.out"
-                  % (nproc, ph, nk, ntg), file=f)
-            print("find ./ -name \"*.wfc*\" -delete", file=f)
+    if flg_phonon is True:
+        if not os.path.isfile("ph.sh"):
+            with open("ph.sh", 'w') as f:
+                print("#!/bin/sh", file=f)
+                print("#QSUB -queue", queue[0:len(queue) - 1], file=f)
+                print("#QSUB -node", node, file=f)
+                print("#PBS -l walltime=8:00:00", file=f)
+                print("source ~/.bashrc", file=f)
+                print("source /home/issp/materiapps/qe/q-e-6.2.1-oldxml.sh", file=f)
+                print("cd $PBS_O_WORKDIR", file=f)
+                print("mpijob -n %d %s -nk %d -ntg %d -in nscf_p.in > nscf_p.out"
+                      % (nproc, pw, nk, ntg), file=f)
+                print("mpijob -n %d %s -nk %d -ntg %d -in ph.in > ph.out"
+                      % (nproc, ph, nk, ntg), file=f)
+                print("find ./ -name \"*.wfc*\" -delete", file=f)
     #
     # Projected DOS
     #
@@ -170,20 +171,21 @@ def write_sh(nkcbz, nkc, nks, nkd, nk_path, atom, atomwfc_dict, queue, path=""):
     #
     # Electron-phonon
     #
-    if not os.path.isfile("elph.sh"):
-        with open("elph.sh", 'w') as f:
-            print("#!/bin/sh", file=f)
-            print("#QSUB -queue", queue[0:len(queue) - 1], file=f)
-            print("#QSUB -node", node, file=f)
-            print("#PBS -l walltime=8:00:00", file=f)
-            print("source ~/.bashrc", file=f)
-            print("source /home/issp/materiapps/qe/q-e-6.2.1-oldxml.sh", file=f)
-            print("cd $PBS_O_WORKDIR", file=f)
-            print("mpijob -n %d %s -nk %d -ntg %d -in nscf_pd.in > nscf_pd.out"
-                  % (nproc, pw, nk, ntg), file=f)
-            print("mpijob -n %d %s -nk %d -ntg %d -in elph.in > elph.out"
-                  % (nproc, ph, nk, ntg), file=f)
-            print("find ./ -name \"*.wfc*\" -delete", file=f)
+    if flg_phonon is True:
+        if not os.path.isfile("elph.sh"):
+            with open("elph.sh", 'w') as f:
+                print("#!/bin/sh", file=f)
+                print("#QSUB -queue", queue[0:len(queue) - 1], file=f)
+                print("#QSUB -node", node, file=f)
+                print("#PBS -l walltime=8:00:00", file=f)
+                print("source ~/.bashrc", file=f)
+                print("source /home/issp/materiapps/qe/q-e-6.2.1-oldxml.sh", file=f)
+                print("cd $PBS_O_WORKDIR", file=f)
+                print("mpijob -n %d %s -nk %d -ntg %d -in nscf_pd.in > nscf_pd.out"
+                      % (nproc, pw, nk, ntg), file=f)
+                print("mpijob -n %d %s -nk %d -ntg %d -in elph.in > elph.out"
+                      % (nproc, ph, nk, ntg), file=f)
+                print("find ./ -name \"*.wfc*\" -delete", file=f)
     #
     # Band
     #
@@ -207,47 +209,48 @@ def write_sh(nkcbz, nkc, nks, nkd, nk_path, atom, atomwfc_dict, queue, path=""):
     #
     # Electron-phonon matrix
     #
-    nk = min(ncore * maxnode, nkc)
-    ntg = good_proc(int(ncore * maxnode / nk), ncore) / 2
-    nproc = nk * ntg
-    node = math.ceil(nproc / ncore)
-    if not os.path.isfile("epmat.sh"):
-        with open("epmat.sh", 'w') as f:
-            print("#!/bin/sh", file=f)
-            print("#QSUB -queue", queue[0:len(queue) - 1], file=f)
-            print("#QSUB -node", node, file=f)
-            print("#PBS -l walltime=8:00:00", file=f)
-            print("source ~/.bashrc", file=f)
-            print("source /home/issp/materiapps/qe/q-e-6.2.1-oldxml.sh", file=f)
-            print("cd $PBS_O_WORKDIR", file=f)
-            print("bmax=`grep \"Highest band which contains FS\" vfermi.out elph.out| awk 'NR==1{print $NF}'`",
-                  file=f)
-            print("bmin=`grep \"Lowest band which contains FS\" vfermi.out elph.out| awk 'NR==1{print $NF}'`",
-                  file=f)
-            print("sed -i -e \"/elph_nbnd_min/c elph_nbnd_min=$bmin\" "
-                  "-e \"/elph_nbnd_max/c elph_nbnd_max=$bmax\" epmat.in", file=f)
-            print("mpijob -n %d %s -nk %d -ntg %d -in nscf_pc.in > nscf_pc.out"
-                  % (nproc, pw, nk, ntg), file=f)
-            print("mpijob -n %d %s -nk %d -ntg %d -in epmat.in > epmat.out"
-                  % (nproc, ph, nk, ntg), file=f)
-            print("find ./ -name \"*.wfc*\" -delete", file=f)
+    if flg_phonon is True:
+        nk = min(ncore * maxnode, nkc)
+        ntg = good_proc(int(ncore * maxnode / nk), ncore) / 2
+        nproc = nk * ntg
+        node = math.ceil(nproc / ncore)
+        if not os.path.isfile("epmat.sh"):
+            with open("epmat.sh", 'w') as f:
+                print("#!/bin/sh", file=f)
+                print("#QSUB -queue", queue[0:len(queue) - 1], file=f)
+                print("#QSUB -node", node, file=f)
+                print("#PBS -l walltime=8:00:00", file=f)
+                print("source ~/.bashrc", file=f)
+                print("source /home/issp/materiapps/qe/q-e-6.2.1-oldxml.sh", file=f)
+                print("cd $PBS_O_WORKDIR", file=f)
+                print("bmax=`grep \"Highest band which contains FS\" vfermi.out elph.out| awk 'NR==1{print $NF}'`",
+                      file=f)
+                print("bmin=`grep \"Lowest band which contains FS\" vfermi.out elph.out| awk 'NR==1{print $NF}'`",
+                      file=f)
+                print("sed -i -e \"/elph_nbnd_min/c elph_nbnd_min=$bmin\" "
+                      "-e \"/elph_nbnd_max/c elph_nbnd_max=$bmax\" epmat.in", file=f)
+                print("mpijob -n %d %s -nk %d -ntg %d -in nscf_pc.in > nscf_pc.out"
+                      % (nproc, pw, nk, ntg), file=f)
+                print("mpijob -n %d %s -nk %d -ntg %d -in epmat.in > epmat.out"
+                      % (nproc, ph, nk, ntg), file=f)
+                print("find ./ -name \"*.wfc*\" -delete", file=f)
     #
     # Coulomb matrix
     #
-    nk = min(ncore * maxnode, nkcbz*2)
-    ntg = 1
-    nproc = nk * ntg
-    node = math.ceil(nproc / ncore)
-    if not os.path.isfile("kel.sh"):
-        with open("kel.sh", 'w') as f:
-            print("#!/bin/sh", file=f)
-            print("#QSUB -queue", queue[0:len(queue) - 1], file=f)
-            print("#QSUB -node", node, file=f)
-            print("#PBS -l walltime=8:00:00", file=f)
-            print("source ~/.bashrc", file=f)
-            print("source /home/issp/materiapps/qe/q-e-6.2.1-oldxml.sh", file=f)
-            print("cd $PBS_O_WORKDIR", file=f)
-            print("mpijob -n %d %s -nk %d -in twin.in > twin.out"
-                  % (nproc, pw, nk), file=f)
-            print("mpijob -n %d %s -nk %d -in sctk.in > sctk.out"
-                  % (nproc, sctk, nk), file=f)
+    if flg_sctk is True:
+        nk = min(ncore * maxnode, nkcbz*2)
+        ntg = 1
+        nproc = nk * ntg
+        node = math.ceil(nproc / ncore)
+        if not os.path.isfile("kel.sh"):
+            with open("kel.sh", 'w') as f:
+                print("#!/bin/sh", file=f)
+                print("#QSUB -queue", queue[0:len(queue) - 1], file=f)
+                print("#QSUB -node", node, file=f)
+                print("#PBS -l walltime=8:00:00", file=f)
+                print("source ~/.bashrc", file=f)
+                print("cd $PBS_O_WORKDIR", file=f)
+                print("mpijob -n %d %s -nk %d -in twin.in > twin.out"
+                      % (nproc, pw, nk), file=f)
+                print("mpijob -n %d %s -nk %d -in sctk.in > sctk.out"
+                      % (nproc, sctk, nk), file=f)

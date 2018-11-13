@@ -12,8 +12,10 @@ from write_sh import write_sh
 from pymatgen.core.periodic_table import get_el_sp
 
 
-def structure2input(structure, dk_path, dq_grid, pseudo_kind, pseudo_dir, queue, rel, path=""):
-
+def structure2input(structure, dk_path, dq_grid, pseudo_kind, pseudo_dir, queue, rel, path="", flg_phonon=False, flg_wan90 = False, flg_sctk = False, flg_openmx = False):
+    _flg_phonon = flg_phonon
+    _flg_wan90 = flg_wan90
+    _flg_sctk = flg_sctk
     if pseudo_kind == "sg15":
         if rel:
             from sg15_rel import pseudo_dict, ecutwfc_dict, ecutrho_dict, valence_dict, atomwfc_dict
@@ -103,25 +105,27 @@ def structure2input(structure, dk_path, dq_grid, pseudo_kind, pseudo_dir, queue,
     dense = spg_analysis.get_ir_reciprocal_mesh(mesh=(nq[0]*4, nq[1]*4, nq[2]*4), is_shift=(0, 0, 0))
     print("Number of irreducible k : ", len(coarse), len(middle), len(dense))
     write_sh(nq[0]*nq[1]*nq[2], len(coarse), len(middle), len(dense),
-             len(skp["explicit_kpoints_rel"]), atom, atomwfc_dict, queue, path)
+             len(skp["explicit_kpoints_rel"]), atom, atomwfc_dict, queue, path, flg_phonon= _flg_phonon, flg_sctk=_flg_sctk)
     #
     # rx.in, scf.in, nscf.in, band.in , nscf_w.in, nscf_r.in
     #
-    write_pwx(skp, pseudo_dir, ecutwfc, ecutrho, pseudo_dict, nq, nbnd, rel)
+    write_pwx(skp, pseudo_dir, ecutwfc, ecutrho, pseudo_dict, nq, nbnd, rel, flg_phonon= _flg_phonon, flg_wan90=_flg_wan90, flg_sctk = _flg_sctk)
     #
     # ph.in, elph.in, epmat.in, phdos.in, rpa.in, scdft.in
     #
-    write_ph(nq, ecutwfc, nbnd)
+    if _flg_phonon is True:
+        write_ph(nq, ecutwfc, nbnd)
     #
     # bands.in, pp.in, proj.in, pw2wan.in, q2r.in
     #
-    write_pp()
+    write_pp(flg_wan90=_flg_wan90)
     #
     # band.gp, pwscf.win, respack.in, disp.in
     #
-    write_wannier(skp, nbnd, nq)
+    write_wannier(skp, nbnd, nq, flg_phonon=_flg_phonon, flg_wan90=_flg_wan90)
     #
     # openmx.in : Input file for openmx
     #
-    if not os.path.isfile("openmx.dat"):
-        write_openmx(skp, nq, rel)
+    if flg_openmx is True:
+        if not os.path.isfile("openmx.dat"):
+            write_openmx(skp, nq, rel)
