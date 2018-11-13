@@ -12,7 +12,7 @@ from write_sh import write_sh
 from pymatgen.core.periodic_table import get_el_sp
 
 
-def structure2input(structure, dk_path, dq_grid, pseudo_kind, pseudo_dir, queue, rel):
+def structure2input(structure, dk_path, dq_grid, pseudo_kind, pseudo_dir, queue, rel, path=""):
 
     if pseudo_kind == "sg15":
         if rel:
@@ -62,6 +62,8 @@ def structure2input(structure, dk_path, dq_grid, pseudo_kind, pseudo_dir, queue,
     for ii in range(3):
         norm = numpy.sqrt(numpy.dot(bvec[ii][:], bvec[ii][:]))
         nq[ii] = round(norm / dq_grid)
+        if nq[ii] == 0 :
+            nq[ii] = 1
         print(norm)
     print("Coarse grid : ", nq[0], nq[1], nq[2])
     #
@@ -101,7 +103,7 @@ def structure2input(structure, dk_path, dq_grid, pseudo_kind, pseudo_dir, queue,
     dense = spg_analysis.get_ir_reciprocal_mesh(mesh=(nq[0]*4, nq[1]*4, nq[2]*4), is_shift=(0, 0, 0))
     print("Number of irreducible k : ", len(coarse), len(middle), len(dense))
     write_sh(nq[0]*nq[1]*nq[2], len(coarse), len(middle), len(dense),
-             len(skp["explicit_kpoints_rel"]), atom, atomwfc_dict, queue)
+             len(skp["explicit_kpoints_rel"]), atom, atomwfc_dict, queue, path)
     #
     # rx.in, scf.in, nscf.in, band.in , nscf_w.in, nscf_r.in
     #

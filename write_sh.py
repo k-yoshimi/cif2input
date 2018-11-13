@@ -27,15 +27,16 @@ def good_proc(nproc, ncore):
     return nproc
 
 
-def write_sh(nkcbz, nkc, nks, nkd, nk_path, atom, atomwfc_dict, queue):
-    pw = "~/program/QE/qe-dev/bin/pw.x"
-    ph = "~/program/QE/qe-dev/bin/ph.x"
-    proj = "~/program/QE/qe-dev/bin/projwfc.x"
-    vf = "~/program/QE/qe-dev/bin/fermi_velocity.x"
-    bands = "~/program/QE/qe-dev/bin/bands.x"
-    sumpdos = "~/program/QE/qe-dev/bin/sumpdos.x"
-    fproj = "~/program/QE/qe-dev/bin/fermi_proj.x"
-    sctk = "~/program/QE/qe-dev/bin/sctk.x"
+def write_sh(nkcbz, nkc, nks, nkd, nk_path, atom, atomwfc_dict, queue, path=""):
+    
+    pw = path + "pw.x"
+    ph = path + "ph.x"
+    proj = path + "projwfc.x"
+    vf = path + "fermi_velocity.x"
+    bands = path +  "bands.x"
+    sumpdos = path + "sumpdos.x"
+    fproj = path + "fermi_proj.x"
+    sctk = path + "sctk.x"
     typ = set(atom)
     #
     if queue == "F4cpus":
@@ -70,6 +71,7 @@ def write_sh(nkcbz, nkc, nks, nkd, nk_path, atom, atomwfc_dict, queue):
             print("#QSUB -node", node, file=f)
             print("#PBS -l walltime=8:00:00", file=f)
             print("source ~/.bashrc", file=f)
+            print("source /home/issp/materiapps/qe/q-e-6.2.1-oldxml.sh", file=f)
             print("cd $PBS_O_WORKDIR", file=f)
             print("mpijob -n %d %s -nk %d -ntg %d -in rx.in > rx_s.out"
                   % (nproc, pw, nk, ntg), file=f)
@@ -92,6 +94,7 @@ def write_sh(nkcbz, nkc, nks, nkd, nk_path, atom, atomwfc_dict, queue):
             print("#QSUB -node", node, file=f)
             print("#PBS -l walltime=8:00:00", file=f)
             print("source ~/.bashrc", file=f)
+            print("source /home/issp/materiapps/qe/q-e-6.2.1-oldxml.sh", file=f)
             print("cd $PBS_O_WORKDIR", file=f)
             print("mpijob -n %d %s -nk %d -ntg %d -in scf.in > scf.out"
                   % (nproc, pw, nk, ntg), file=f)
@@ -105,6 +108,7 @@ def write_sh(nkcbz, nkc, nks, nkd, nk_path, atom, atomwfc_dict, queue):
             print("#QSUB -node", node, file=f)
             print("#PBS -l walltime=8:00:00", file=f)
             print("source ~/.bashrc", file=f)
+            print("source /home/issp/materiapps/qe/q-e-6.2.1-oldxml.sh", file=f)
             print("cd $PBS_O_WORKDIR", file=f)
             print("mpijob -n %d %s -nk %d -ntg %d -in nscf_p.in > nscf_p.out"
                   % (nproc, pw, nk, ntg), file=f)
@@ -136,6 +140,7 @@ def write_sh(nkcbz, nkc, nks, nkd, nk_path, atom, atomwfc_dict, queue):
             print("#QSUB -node", node, file=f)
             print("#PBS -l walltime=8:00:00", file=f)
             print("source ~/.bashrc", file=f)
+            print("source /home/issp/materiapps/qe/q-e-6.2.1-oldxml.sh", file=f)
             print("cd $PBS_O_WORKDIR", file=f)
             print("mpijob -n %d %s -nk %d -ntg %d -in nscf.in > nscf.out"
                   % (nproc, pw, nk, ntg), file=f)
@@ -172,6 +177,7 @@ def write_sh(nkcbz, nkc, nks, nkd, nk_path, atom, atomwfc_dict, queue):
             print("#QSUB -node", node, file=f)
             print("#PBS -l walltime=8:00:00", file=f)
             print("source ~/.bashrc", file=f)
+            print("source /home/issp/materiapps/qe/q-e-6.2.1-oldxml.sh", file=f)
             print("cd $PBS_O_WORKDIR", file=f)
             print("mpijob -n %d %s -nk %d -ntg %d -in nscf_pd.in > nscf_pd.out"
                   % (nproc, pw, nk, ntg), file=f)
@@ -192,6 +198,7 @@ def write_sh(nkcbz, nkc, nks, nkd, nk_path, atom, atomwfc_dict, queue):
             print("#QSUB -node", node, file=f)
             print("#PBS -l walltime=8:00:00", file=f)
             print("source ~/.bashrc", file=f)
+            print("source /home/issp/materiapps/qe/q-e-6.2.1-oldxml.sh", file=f)
             print("cd $PBS_O_WORKDIR", file=f)
             print("mpijob -n %d %s -nk %d -ntg %d -in band.in > band.out"
                   % (nproc, pw, nk, ntg), file=f)
@@ -211,6 +218,7 @@ def write_sh(nkcbz, nkc, nks, nkd, nk_path, atom, atomwfc_dict, queue):
             print("#QSUB -node", node, file=f)
             print("#PBS -l walltime=8:00:00", file=f)
             print("source ~/.bashrc", file=f)
+            print("source /home/issp/materiapps/qe/q-e-6.2.1-oldxml.sh", file=f)
             print("cd $PBS_O_WORKDIR", file=f)
             print("bmax=`grep \"Highest band which contains FS\" vfermi.out elph.out| awk 'NR==1{print $NF}'`",
                   file=f)
@@ -237,6 +245,7 @@ def write_sh(nkcbz, nkc, nks, nkd, nk_path, atom, atomwfc_dict, queue):
             print("#QSUB -node", node, file=f)
             print("#PBS -l walltime=8:00:00", file=f)
             print("source ~/.bashrc", file=f)
+            print("source /home/issp/materiapps/qe/q-e-6.2.1-oldxml.sh", file=f)
             print("cd $PBS_O_WORKDIR", file=f)
             print("mpijob -n %d %s -nk %d -in twin.in > twin.out"
                   % (nproc, pw, nk), file=f)
