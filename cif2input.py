@@ -65,7 +65,16 @@ if __name__ == '__main__':
 
     parser.add_argument('-r', '--rel',
                         action='store_false')
-    
+
+    parser.add_argument('-m', '--move_list',
+                        action='store',
+                        dest='move_list',
+                        nargs='?',
+                        type=str,
+                        default="",
+                        help=('Move atom list'),
+                        metavar=None)
+
     args = parser.parse_args()
 
     #
@@ -81,6 +90,7 @@ if __name__ == '__main__':
     pseudo_dir = args.pseudo_path
     queue = args.queue
     rel = args.rel
+    _move_list = args.move_list
     #
     print("  dk for band : {0}".format(dk_path))
     print("  dq for grid : {0}".format(dq_grid))
@@ -89,4 +99,4 @@ if __name__ == '__main__':
 
     structure.remove_oxidation_states()
 
-    structure2input(structure, dk_path, dq_grid, pseudo_kind, pseudo_dir, queue, rel)
+    structure2input(structure, dk_path, dq_grid, pseudo_kind, pseudo_dir, queue, rel, move_list=_move_list)

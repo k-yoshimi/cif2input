@@ -2,8 +2,7 @@ import os
 import pymatgen
 from pymatgen.core.periodic_table import get_el_sp
 
-
-def write_atom(f, avec, typ, nat, pos, atom, pseudo_dict):
+def write_atom(f, avec, typ, nat, pos, atom, pseudo_dict, move_list=[""]):
     print("CELL_PARAMETERS angstrom", file=f)
     for ii in range(3):
         print(" %f %f %f" % (avec[ii, 0], avec[ii, 1], avec[ii, 2]), file=f)
@@ -12,9 +11,16 @@ def write_atom(f, avec, typ, nat, pos, atom, pseudo_dict):
         print(" %s %f %s" % (ityp, pymatgen.Element(ityp).atomic_mass, pseudo_dict[str(ityp)]), file=f)
     print("ATOMIC_POSITIONS crystal", file=f)
     for iat in range(nat):
-        print(" %s %f %f %f" % (
-            atom[iat], pos[iat][0], pos[iat][1], pos[iat][2]), file=f)
-
+        flgmove = True
+        for move_atom in move_list:
+            if atom[iat] == move_atom:
+                flgmove = False
+        if flgmove is False:
+            print(" %s %f %f %f" % (
+                atom[iat], pos[iat][0], pos[iat][1], pos[iat][2]), file=f)
+        else:
+            print(" %s %f %f %f 0 0 0" % (
+                atom[iat], pos[iat][0], pos[iat][1], pos[iat][2]), file=f)
 
 def write_middle(f, pseudo_dir, nat, ntyp, ecutwfc, ecutrho, rel):
     print("  pseudo_dir = \'%s\'" % pseudo_dir, file=f)
@@ -32,8 +38,7 @@ def write_middle(f, pseudo_dir, nat, ntyp, ecutwfc, ecutrho, rel):
         print("     noncolin = .FALSE.", file=f)
         print("     lspinorb = .FALSE.", file=f)
 
-
-def write_pwx(skp, pseudo_dir, ecutwfc, ecutrho, pseudo_dict, nq, nbnd, rel, flg_phonon=False, flg_sctk=False, flg_respack=True, flg_wan90 = False):
+def write_pwx(skp, pseudo_dir, ecutwfc, ecutrho, pseudo_dict, nq, nbnd, rel, move_list=[], flg_phonon=False, flg_sctk=False, flg_respack=True, flg_wan90 = False):
     #
     # Lattice information
     #
@@ -46,10 +51,40 @@ def write_pwx(skp, pseudo_dir, ecutwfc, ecutrho, pseudo_dict, nq, nbnd, rel, flg
     #
     # rx.in : Variation cell optimization
     #
+    # if not os.path.isfile("rx.in"):
+    #     with open("rx.in", 'w') as f:
+    #         print("&CONTROL", file=f)
+    #         print(" calculation = \'vc-relax\'", file=f)
+    #         write_middle(f, pseudo_dir, nat, ntyp, ecutwfc, ecutrho, rel)
+    #         print(" occupations = \'tetrahedra_opt\'", file=f)
+    #         print("/", file=f)
+    #         print("&ELECTRONS", file=f)
+    #         print(" conv_thr = %e" % (float(nat)*1.0e-10), file=f)
+    #         print(" mixing_beta = 0.3", file=f)
+    #         print(" scf_must_converge = .false.", file=f)
+    #         print(" electron_maxstep = 30", file=f)
+    #         print("/", file=f)
+    #         print("&IONS", file=f)
+    #         print(" ion_dynamics = \"bfgs\"", file=f)
+    #         print("/", file=f)
+    #         print("&CELL", file=f)
+    #         print(" press = 0.0", file=f)
+    #         print(" cell_dynamics = \"bfgs\"", file=f)
+    #         print("/", file=f)
+    #         write_atom(f, avec, typ, nat, pos, atom, pseudo_dict)
+    #         print("K_POINTS automatic", file=f)
+    #         print(" %d %d %d 0 0 0" % (nq[0]*2, nq[1]*2, nq[2]*2), file=f)
+
     if not os.path.isfile("rx.in"):
         with open("rx.in", 'w') as f:
             print("&CONTROL", file=f)
-            print(" calculation = \'vc-relax\'", file=f)
+            print(" calculation = \'relax\'", file=f)
+            print(" tstress = \'.true.\'", file=f)
+            print(" tprnfor = \'.true.\'", file=f)
+            print(" wf_collect = \'.true.\'", file=f)
+            print(" etot_conv_thr = 1.d-5", file=f)
+            print(" forc_conv_thr = 1.d-4", file=f)
+            print(" nstep = 100", file=f)
             write_middle(f, pseudo_dir, nat, ntyp, ecutwfc, ecutrho, rel)
             print(" occupations = \'tetrahedra_opt\'", file=f)
             print("/", file=f)
@@ -66,9 +101,11 @@ def write_pwx(skp, pseudo_dir, ecutwfc, ecutrho, pseudo_dict, nq, nbnd, rel, flg
             print(" press = 0.0", file=f)
             print(" cell_dynamics = \"bfgs\"", file=f)
             print("/", file=f)
-            write_atom(f, avec, typ, nat, pos, atom, pseudo_dict)
+            write_atom(f, avec, typ, nat, pos, atom, pseudo_dict, move_list)
             print("K_POINTS automatic", file=f)
             print(" %d %d %d 0 0 0" % (nq[0]*2, nq[1]*2, nq[2]*2), file=f)
+
+    #
     #
     # scf.in : Charge density
     #

@@ -12,10 +12,11 @@ from write.write_sh import write_sh
 from pymatgen.core.periodic_table import get_el_sp
 
 
-def structure2input(structure, dk_path, dq_grid, pseudo_kind, pseudo_dir, queue, rel, path="", flg_phonon=False, flg_wan90 = False, flg_sctk = False, flg_openmx = False):
+def structure2input(structure, dk_path, dq_grid, pseudo_kind, pseudo_dir, queue, rel, path="", move_list=[""],flg_phonon=False, flg_wan90 = False, flg_sctk = False, flg_openmx = False):
     _flg_phonon = flg_phonon
     _flg_wan90 = flg_wan90
     _flg_sctk = flg_sctk
+    _move_list = move_list
     if pseudo_kind == "sg15":
         if rel:
             from pesudo.sg15_rel import pseudo_dict, ecutwfc_dict, ecutrho_dict, valence_dict, atomwfc_dict
@@ -109,7 +110,7 @@ def structure2input(structure, dk_path, dq_grid, pseudo_kind, pseudo_dir, queue,
     #
     # rx.in, scf.in, nscf.in, band.in , nscf_w.in, nscf_r.in
     #
-    write_pwx(skp, pseudo_dir, ecutwfc, ecutrho, pseudo_dict, nq, nbnd, rel, flg_phonon= _flg_phonon, flg_wan90=_flg_wan90, flg_sctk = _flg_sctk)
+    write_pwx(skp, pseudo_dir, ecutwfc, ecutrho, pseudo_dict, nq, nbnd, rel, flg_phonon= _flg_phonon, flg_wan90=_flg_wan90, flg_sctk = _flg_sctk, move_list=_move_list)
     #
     # ph.in, elph.in, epmat.in, phdos.in, rpa.in, scdft.in
     #
