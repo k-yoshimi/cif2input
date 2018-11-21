@@ -1,4 +1,4 @@
-from openmx import omx_pao_dict, omx_pot_dict, omx_radius_dict, omx_valence_dict
+from . import openmx as omx
 import pymatgen
 import numpy
 from pymatgen.core.periodic_table import get_el_sp
@@ -34,10 +34,10 @@ def write_openmx(skp, nq, rel):
         print("<Definition.of.Atomic.Species", file=f)
         for ityp in typ:
             print(" %s  %s%s-%s  %s  %f" % (
-                ityp, ityp, omx_radius_dict[str(ityp)], omx_pao_dict[str(ityp)], omx_pot_dict[str(ityp)],
+                ityp, ityp, omx.omx_radius_dict[str(ityp)], omx.omx_pao_dict[str(ityp)], omx.omx_pot_dict[str(ityp)],
                 pymatgen.Element(ityp).atomic_mass), file=f)
             print("proj%s  %s%s-s1p1d1  %s" % (
-                ityp, ityp, omx_radius_dict[str(ityp)], omx_pot_dict[str(ityp)]), file=f)
+                ityp, ityp, omx.omx_radius_dict[str(ityp)], omx.omx_pot_dict[str(ityp)]), file=f)
         print("Definition.of.Atomic.Species>", file=f)
         print("Atoms.Number  %d" % nat, file=f)
         print("Atoms.SpeciesAndCoordinates.Unit   Ang", file=f)
@@ -46,7 +46,7 @@ def write_openmx(skp, nq, rel):
             pos2 = numpy.dot(pos[iat, :], avec)
             print("%d %s %f %f %f %f %f" % (
                 iat + 1, atom[iat], pos2[0], pos2[1], pos2[2],
-                omx_valence_dict[atom[iat]] * 0.5, omx_valence_dict[atom[iat]] * 0.5), file=f)
+                omx.omx_valence_dict[atom[iat]] * 0.5, omx.omx_valence_dict[atom[iat]] * 0.5), file=f)
         print("Atoms.SpeciesAndCoordinates>", file=f)
         print("Atoms.UnitVectors.Unit  Ang", file=f)
         print("<Atoms.UnitVectors", file=f)
@@ -306,7 +306,7 @@ def write_openmx(skp, nq, rel):
             pos2 = numpy.dot(pos[iat, :], avec)
             print("%d %s %f %f %f %f %f" % (
                 iat + 1, atom[iat], pos2[0], pos2[1], pos2[2],
-                omx_valence_dict[atom[iat]] * 0.5, omx_valence_dict[atom[iat]] * 0.5), file=f)
+                omx.omx_valence_dict[atom[iat]] * 0.5, omx.omx_valence_dict[atom[iat]] * 0.5), file=f)
         print("NEB.Atoms.SpeciesAndCoordinates>", file=f)
         #
         print("#", file=f)
@@ -358,7 +358,7 @@ def write_openmx(skp, nq, rel):
             pos2 = numpy.dot(pos[iat, :], avec)
             print("%d %s %f %f %f %f %f" % (
                 iat + 1, atom[iat], pos2[0], pos2[1], pos2[2],
-                omx_valence_dict[atom[iat]] * 0.5, omx_valence_dict[atom[iat]] * 0.5), file=f)
+                omx.omx_valence_dict[atom[iat]] * 0.5, omx.omx_valence_dict[atom[iat]] * 0.5), file=f)
         print("LeftLeadAtoms.SpeciesAndCoordinates>", file=f)
         print("RightLeadAtoms.Number  %d" % nat, file=f)
         print("<RightLeadAtoms.SpeciesAndCoordinates", file=f)
@@ -366,7 +366,7 @@ def write_openmx(skp, nq, rel):
             pos2 = numpy.dot(pos[iat, :], avec)
             print("%d %s %f %f %f %f %f" % (
                 iat + 1, atom[iat], pos2[0], pos2[1], pos2[2],
-                omx_valence_dict[atom[iat]] * 0.5, omx_valence_dict[atom[iat]] * 0.5), file=f)
+                omx.omx_valence_dict[atom[iat]] * 0.5, omx.omx_valence_dict[atom[iat]] * 0.5), file=f)
         print("RightLeadAtoms.SpeciesAndCoordinates>", file=f)
         #
         print("NEGF.Num.Poles             150", file=f)

@@ -3,12 +3,12 @@ import seekpath
 import numpy
 import os
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
-from write_openmx import write_openmx
-from write_pwx import write_pwx
-from write_pp import write_pp
-from write_ph import write_ph
-from write_wannier import write_wannier
-from write_sh import write_sh
+from write.write_openmx import write_openmx
+from write.write_pwx import write_pwx
+from write.write_pp import write_pp
+from write.write_ph import write_ph
+from write.write_wannier import write_wannier
+from write.write_sh import write_sh
 from pymatgen.core.periodic_table import get_el_sp
 
 
