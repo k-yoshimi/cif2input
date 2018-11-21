@@ -39,6 +39,7 @@ def structure2input(structure, dk_path, dq_grid, pseudo_kind, pseudo_dir, queue,
             if abs(round(coord3) - coord3) < 0.001:
                 frac_coord2[ipos, iaxis] = float(round(coord3)) / 6.0
     #
+    print(structure)
     skp = seekpath.get_explicit_k_path((structure.lattice.matrix, frac_coord2,
                                         [pymatgen.Element(str(spc)).number for spc in structure.species]),
                                        reference_distance=dk_path)

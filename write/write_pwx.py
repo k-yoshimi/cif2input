@@ -79,9 +79,9 @@ def write_pwx(skp, pseudo_dir, ecutwfc, ecutrho, pseudo_dict, nq, nbnd, rel, mov
         with open("rx.in", 'w') as f:
             print("&CONTROL", file=f)
             print(" calculation = \'relax\'", file=f)
-            print(" tstress = \'.true.\'", file=f)
-            print(" tprnfor = \'.true.\'", file=f)
-            print(" wf_collect = \'.true.\'", file=f)
+            print(" tstress = .true.", file=f)
+            print(" tprnfor = .true.", file=f)
+            print(" wf_collect = .true.", file=f)
             print(" etot_conv_thr = 1.d-5", file=f)
             print(" forc_conv_thr = 1.d-4", file=f)
             print(" nstep = 100", file=f)

@@ -1,5 +1,3 @@
-
-
 pseudo_dict = {
     "Ag": "Ag_ONCV_PBE_FR-1.0.upf",
     "Al": "Al_ONCV_PBE_FR-1.0.upf",

@@ -64,7 +64,7 @@ if __name__ == '__main__':
                         metavar=None)
 
     parser.add_argument('-r', '--rel',
-                        action='store_false')
+                        action='store_true')
 
     parser.add_argument('-m', '--move_list',
                         action='store',
