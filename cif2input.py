@@ -2,7 +2,7 @@
 import sys
 import pymatgen
 import argparse
-from structure2input import structure2input
+from tool.structure2input import structure2input
 
 if __name__ == '__main__':
 
