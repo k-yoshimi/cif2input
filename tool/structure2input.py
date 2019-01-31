@@ -12,7 +12,7 @@ from write.write_sh import write_sh
 from pymatgen.core.periodic_table import get_el_sp
 
 
-def structure2input(structure, dk_path, dq_grid, pseudo_kind, pseudo_dir, queue, rel, path="", flg_phonon=False, flg_wan90 = False, flg_sctk = False, flg_openmx = False):
+def structure2input(structure, dk_path, dq_grid, pseudo_kind, pseudo_dir, queue, rel, norm_con, path="", flg_phonon=False, flg_wan90 = False, flg_sctk = False, flg_openmx = False):
     _flg_phonon = flg_phonon
     _flg_wan90 = flg_wan90
     _flg_sctk = flg_sctk
@@ -24,6 +24,8 @@ def structure2input(structure, dk_path, dq_grid, pseudo_kind, pseudo_dir, queue,
     elif pseudo_kind == "pslibrary":
         if rel:
             from pesudo.pslibrary_rel import pseudo_dict, ecutwfc_dict, ecutrho_dict, valence_dict, atomwfc_dict
+        elif norm_con:
+            from pesudo.pslibrary_nc import pseudo_dict, ecutwfc_dict, ecutrho_dict, valence_dict, atomwfc_dict
         else:
             from pesudo.pslibrary import pseudo_dict, ecutwfc_dict, ecutrho_dict, valence_dict, atomwfc_dict
     else:

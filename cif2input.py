@@ -64,6 +64,9 @@ if __name__ == '__main__':
                         metavar=None)
 
     parser.add_argument('-r', '--rel',
+                        action='store_true')
+    
+    parser.add_argument('-nc', '--norm_con',
                         action='store_false')
     
     args = parser.parse_args()
@@ -81,12 +84,15 @@ if __name__ == '__main__':
     pseudo_dir = args.pseudo_path
     queue = args.queue
     rel = args.rel
+    norm_con = args.norm_con
     #
     print("  dk for band : {0}".format(dk_path))
     print("  dq for grid : {0}".format(dq_grid))
     print("  Pseudo kind is ", pseudo_kind)
     print("  Pseudo is at ", pseudo_dir)
+    print("  Relative Flag : ",rel)
+    print("  Norm conserved Flag : ",norm_con)
 
     structure.remove_oxidation_states()
 
-    structure2input(structure, dk_path, dq_grid, pseudo_kind, pseudo_dir, queue, rel)
+    structure2input(structure, dk_path, dq_grid, pseudo_kind, pseudo_dir, queue, rel, norm_con)
