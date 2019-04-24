@@ -217,7 +217,8 @@ def write_pwx(skp, pseudo_dir, ecutwfc, ecutrho, pseudo_dict, nq, nbnd, rel, flg
                 print("/", file=f)
                 write_atom(f, avec, typ, nat, pos, atom, pseudo_dict)
                 print("K_POINTS automatic", file=f)
-                print(" %d %d %d 0 0 0" % (nq[0], nq[1], nq[2]), file=f)
+                print(" %d %d %d 0 0 0" % (nq[0]*2, nq[1]*2, nq[2]*2), file=f)
+                #print(" %d %d %d 0 0 0" % (nq[0], nq[1], nq[2]), file=f)
     #
     # twin.in : For sctk input
     #

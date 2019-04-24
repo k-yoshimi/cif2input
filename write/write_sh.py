@@ -27,7 +27,7 @@ def good_proc(nproc, ncore):
     return nproc
 
 
-def write_sh(nkcbz, nkc, nks, nkd, nk_path, atom, atomwfc_dict, queue, path="", flg_phonon=False, flg_sctk=False):
+def write_sh(nkcbz, nkc, nks, nkd, nk_path, atom, atomwfc_dict, queue, path="", flg_phonon=False, flg_sctk=False, flg_respack=True):
     
     pw = path + "pw.x"
     ph = path + "ph.x"
@@ -38,6 +38,7 @@ def write_sh(nkcbz, nkc, nks, nkd, nk_path, atom, atomwfc_dict, queue, path="", 
     fproj = path + "fermi_proj.x"
     sctk = path + "sctk.x"
     qe = "/home/issp/materiapps/qe/q-e-6.3.sh"
+    respack = "/home/issp/materiapps/respack/respackvars.sh"
     typ = set(atom)
     #
     if queue == "F4cpus":
@@ -111,6 +112,23 @@ def write_sh(nkcbz, nkc, nks, nkd, nk_path, atom, atomwfc_dict, queue, path="", 
             print("cd $PBS_O_WORKDIR", file=f)
             print("mpijob -n %d %s -nk %d -ntg %d -in scf.in > scf.out"
                   % (nproc, pw, nk, ntg), file=f)
+    #
+    # non scf
+    #
+    if not os.path.isfile("nscf_r.sh"):
+        with open("nscf_r.sh", 'w') as f:
+            print("#!/bin/sh", file=f)
+            print("#QSUB -queue", queue[0:len(queue) - 1], file=f)
+            print("#QSUB -node", node, file=f)
+            print("#PBS -l walltime="+runtime, file=f)
+            #print("#PBS -l walltime=8:00:00", file=f)
+            print("source ~/.bashrc", file=f)
+            print("source "+qe, file=f)
+            #print("source /home/issp/materiapps/qe/q-e-6.2.1-oldxml.sh", file=f)
+            print("cd $PBS_O_WORKDIR", file=f)
+            print("mpijob -n %d %s -nk %d -ntg %d -in nscf_r.in > nscf_r.out"
+                  % (nproc, pw, nk, ntg), file=f)
+ 
     #
     # Phonon
     #
@@ -278,3 +296,67 @@ def write_sh(nkcbz, nkc, nks, nkd, nk_path, atom, atomwfc_dict, queue, path="", 
                       % (nproc, pw, nk), file=f)
                 print("mpijob -n %d %s -nk %d -in sctk.in > sctk.out"
                       % (nproc, sctk, nk), file=f)
+    #
+    # CalcChi for RESPACK 
+    #
+    if flg_respack is True:
+        node  = maxnode
+        nproc = maxnode
+        nomp  = ncore
+        if not os.path.isfile("calcChi.sh"):
+            with open("calcChi.sh", 'w') as f:
+                print("#!/bin/sh", file=f)
+                print("#QSUB -queue", queue[0:len(queue) - 1], file=f)
+                print("#QSUB -node", node, file=f)
+                print("#QSUB -omp ", nomp, file=f)
+                print("#QSUB -mpi ", nproc, file=f)
+                print("#PBS -l walltime="+runtime, file=f)
+                #print("#PBS -l walltime=8:00:00", file=f)
+                print("source ~/.bashrc", file=f)
+                print("source "+respack, file=f)
+                print("cd $PBS_O_WORKDIR", file=f)
+                print("mpijob -n %d calc_chiqw  < respack.in > calc_chi.out"
+                      % (nproc), file=f)
+    #
+    # CalcWJ for RESPACK 
+    #
+    if flg_respack is True:
+        node  = 1
+        nproc = 1
+        nomp  = ncore
+        if not os.path.isfile("calcWJ.sh"):
+            with open("calcWJ.sh", 'w') as f:
+                print("#!/bin/sh", file=f)
+                print("#QSUB -queue", queue[0:len(queue) - 1], file=f)
+                print("#QSUB -node", node, file=f)
+                print("#QSUB -omp ", nomp, file=f)
+                print("#QSUB -mpi ", nproc, file=f)
+                print("#PBS -l walltime="+runtime, file=f)
+                #print("#PBS -l walltime=8:00:00", file=f)
+                print("source ~/.bashrc", file=f)
+                print("source "+respack, file=f)
+                print("cd $PBS_O_WORKDIR", file=f)
+                print("calc_w3d < respack.in > calc_w3d.out", file=f)
+                print("calc_j3d < respack.in > calc_j3d.out", file=f)
+    #
+    # Wannier for RESPACK 
+    #
+    if flg_respack is True:
+        node  = 1
+        nproc = 1
+        nomp  = ncore
+        if not os.path.isfile("wannier.sh"):
+            with open("wannier.sh", 'w') as f:
+                print("#!/bin/sh", file=f)
+                print("#QSUB -queue i18cpu", file=f)
+                #print("#QSUB -queue", queue[0:len(queue) - 1], file=f)
+                print("#QSUB -node", node, file=f)
+                print("#QSUB -omp ", nomp, file=f)
+                print("#QSUB -mpi ", nproc, file=f)
+                print("#PBS -I ", file=f)
+                print("#PBS -X ", file=f)
+                print("#PBS -l walltime="+runtime, file=f)
+                #print("#PBS -l walltime=8:00:00", file=f)
+                #print("source ~/.bashrc", file=f)
+                #print("source "+respack, file=f)
+                print("cd $PBS_O_WORKDIR", file=f)
