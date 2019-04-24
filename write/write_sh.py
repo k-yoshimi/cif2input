@@ -354,7 +354,6 @@ def write_sh(nkcbz, nkc, nks, nkd, nk_path, atom, atomwfc_dict, queue, path="", 
                 print("#QSUB -omp ", nomp, file=f)
                 print("#QSUB -mpi ", nproc, file=f)
                 print("#PBS -I ", file=f)
-                print("#PBS -X ", file=f)
                 print("#PBS -l walltime="+runtime, file=f)
                 #print("#PBS -l walltime=8:00:00", file=f)
                 #print("source ~/.bashrc", file=f)
