@@ -18,18 +18,23 @@ def structure2input(structure, dk_path, dq_grid, pseudo_kind, pseudo_dir, queue,
     _flg_sctk = flg_sctk
     if pseudo_kind == "sg15":
         if rel:
-            from pesudo.sg15_rel import pseudo_dict, ecutwfc_dict, ecutrho_dict, valence_dict, atomwfc_dict
+            from pseudo.sg15_rel import pseudo_dict, ecutwfc_dict, ecutrho_dict, valence_dict, atomwfc_dict
         else:
-            from pesudo.sg15 import pseudo_dict, ecutwfc_dict, ecutrho_dict, valence_dict, atomwfc_dict
+            from pseudo.sg15 import pseudo_dict, ecutwfc_dict, ecutrho_dict, valence_dict, atomwfc_dict
+    elif pseudo_kind == "sg15_2":
+        if rel:
+            from pseudo.sg15_2_rel import pseudo_dict, ecutwfc_dict, ecutrho_dict, valence_dict, atomwfc_dict
+        else:
+            from pseudo.sg15_2 import pseudo_dict, ecutwfc_dict, ecutrho_dict, valence_dict, atomwfc_dict
     elif pseudo_kind == "pslibrary":
         if rel:
-            from pesudo.pslibrary_rel import pseudo_dict, ecutwfc_dict, ecutrho_dict, valence_dict, atomwfc_dict
+            from pseudo.pslibrary_rel import pseudo_dict, ecutwfc_dict, ecutrho_dict, valence_dict, atomwfc_dict
         elif norm_con:
-            from pesudo.pslibrary_nc import pseudo_dict, ecutwfc_dict, ecutrho_dict, valence_dict, atomwfc_dict
+            from pseudo.pslibrary_nc import pseudo_dict, ecutwfc_dict, ecutrho_dict, valence_dict, atomwfc_dict
         else:
-            from pesudo.pslibrary import pseudo_dict, ecutwfc_dict, ecutrho_dict, valence_dict, atomwfc_dict
+            from pseudo.pslibrary import pseudo_dict, ecutwfc_dict, ecutrho_dict, valence_dict, atomwfc_dict
     else:
-        from pesudo.sssp import pseudo_dict, ecutwfc_dict, ecutrho_dict, valence_dict, atomwfc_dict
+        from pseudo.sssp import pseudo_dict, ecutwfc_dict, ecutrho_dict, valence_dict, atomwfc_dict
     #
     # Band path and primitive lattice
     #
