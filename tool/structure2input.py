@@ -33,6 +33,11 @@ def structure2input(structure, dk_path, dq_grid, pseudo_kind, pseudo_dir, queue,
             from pseudo.pslibrary_nc import pseudo_dict, ecutwfc_dict, ecutrho_dict, valence_dict, atomwfc_dict
         else:
             from pseudo.pslibrary import pseudo_dict, ecutwfc_dict, ecutrho_dict, valence_dict, atomwfc_dict
+    elif pseudo_kind == "dojo":
+        if norm_con:
+            from pseudo.dojo import pseudo_dict, ecutwfc_dict, ecutrho_dict, valence_dict, atomwfc_dict
+        else:
+            print("under construction")
     else:
         from pseudo.sssp import pseudo_dict, ecutwfc_dict, ecutrho_dict, valence_dict, atomwfc_dict
     #
@@ -98,7 +103,7 @@ def structure2input(structure, dk_path, dq_grid, pseudo_kind, pseudo_dir, queue,
     nbnd = 0
     for iat in atom:
         nbnd += valence_dict[iat]
-    nbnd = nbnd / 2 + len(atom)*20
+    nbnd = nbnd / 2 + len(atom)*50
     if rel:
         nbnd *= 2
     #
